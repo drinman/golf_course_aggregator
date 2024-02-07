@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Results</title>
+    <!-- Include the Google Maps JavaScript API -->
+<!-- Include the Google Maps JavaScript API -->
+<script async defer src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap" type="text/javascript"></script>
+    <style>
+        /* Style your map container */
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Golf Courses</h1>
+    {% if courses %}
+        <ul>
+            {% for course in courses %}
+                <li>
+                    <strong>{{ course.name }}</strong><br>
+                    Rating: {{ course.rating }}<br>
+                    Reviews: {{ course.review_count }}<br>
+                    <a href="{{ course.url }}" target="_blank">View on Yelp</a>
+                </li>
+            {% endfor %}
+        </ul>
+        <!-- Map container -->
+        <div id="map"></div>
+    {% else %}
+        <p>No courses found. Try another search.</p>
+    {% endif %}
+    <a href="/">New Search</a>
+
+    <!-- Initialize the map and add markers -->
+    <script>
+        function initMap() {
+            // Set a default location for the map's initial center
+            var defaultLocation = {lat: 37.7749, lng: -122.4194}; // Example: San Francisco
+
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 10,
+                center: defaultLocation
+            });
+
+            {% for course in courses %}
+                var courseLocation = {lat: {{ course.coordinates.latitude }}, lng: {{ course.coordinates.longitude }}};
+                var marker = new google.maps.Marker({
+                    position: courseLocation,
+                    map: map,
+                    title: '{{ course.name | safe }}'
+                });
+            {% endfor %}
+        }
+    </script>
+</body>
+</html>
